@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: ArgentBank Transactions API
+  version: 1.0.0
+  description: API pour gérer les transactions des utilisateurs
+
+paths:
+  /user/transactions:
+    get:
+      summary: Récupérer les transactions du mois en cours groupées par compte
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des transactions du mois en cours
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+              example:
+                - id: "txn001"
+                  amount: 150.75
+                  date: "2025-05-01"
+                  description: "Paiement restaurant"
+                  category: "Alimentation"
+                  notes: "Dîner entre amis"
+                - id: "txn002"
+                  amount: -45.00
+                  date: "2025-05-03"
+                  description: "Essence"
+                  category: "Transport"
+                  notes: ""
+        '401':
+          description: Non autorisé
+
+
+  
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+          format: float
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+        category:
+          type: string
+        notes:
+          type: string
