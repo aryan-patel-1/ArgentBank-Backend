@@ -20,13 +20,13 @@ paths:
                 items:
                   $ref: '#/components/schemas/Transaction'
               example:
-                - id: "txn001"
+                - id: "iron"
                   amount: 150.75
                   date: "2025-05-01"
                   description: "Paiement restaurant"
                   category: "Alimentation"
                   notes: "Dîner entre amis"
-                - id: "txn002"
+                - id: "iron"
                   amount: -45.00
                   date: "2025-05-03"
                   description: "Essence"
@@ -35,8 +35,74 @@ paths:
         '401':
           description: Non autorisé
 
+  /user/transactions/{transactionId}:
+    get:
+      summary: Détail d'une transaction spécifique
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Détail de la transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+              example:
+                id: "iron"
+                amount: 150.75
+                date: "2025-05-01"
+                description: "Paiement restaurant"
+                category: "Alimentation"
+                notes: "Dîner entre amis"
+        '404':
+          description: Transaction non trouvée
+        '401':
+          description: Non autorisé
 
-  
+    put:
+      summary: Modifier les informations d'une transaction
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                notes:
+                  type: string
+            example:
+              category: "Alimentation"
+              notes: "Ajout d'une note perso"
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Transaction mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non autorisé
+        '404':
+          description: Transaction non trouvée
+
 components:
   securitySchemes:
     BearerAuth:
