@@ -10,28 +10,65 @@ paths:
       summary: Récupérer les transactions du mois en cours groupées par compte
       security:
         - BearerAuth: []
+      parameters:
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "2025-05"
       responses:
         '200':
-          description: Liste des transactions du mois en cours
+          description: Liste des transactions
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Transaction'
-              example:
-                - id: "iron"
-                  amount: 150.75
-                  date: "2025-05-01"
-                  description: "Paiement restaurant"
-                  category: "Alimentation"
-                  notes: "Dîner entre amis"
-                - id: "iron"
-                  amount: -45.00
-                  date: "2025-05-03"
-                  description: "Essence"
-                  category: "Transport"
-                  notes: ""
+        '401':
+          description: Non autorisé
+
+    post:
+      summary: Créer une nouvelle transaction
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+                - description
+                - accountId
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  example: -50.25
+                description:
+                  type: string
+                  example: "Achat supermarché"
+                category:
+                  type: string
+                  example: "Alimentation"
+                notes:
+                  type: string
+                  example: "Courses hebdomadaires"
+                accountId:
+                  type: string
+                  example: "acc_123456"
+      responses:
+        '201':
+          description: Transaction créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '400':
+          description: Requête invalide
         '401':
           description: Non autorisé
 
@@ -53,20 +90,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transaction'
-              example:
-                id: "iron"
-                amount: 150.75
-                date: "2025-05-01"
-                description: "Paiement restaurant"
-                category: "Alimentation"
-                notes: "Dîner entre amis"
-        '404':
-          description: Transaction non trouvée
         '401':
           description: Non autorisé
+        '404':
+          description: Transaction non trouvée
 
     put:
-      summary: Modifier les informations d'une transaction
+      summary: Modifier une transaction (catégorie et notes uniquement)
       parameters:
         - name: transactionId
           in: path
@@ -82,11 +112,10 @@ paths:
               properties:
                 category:
                   type: string
+                  example: "Alimentation"
                 notes:
                   type: string
-            example:
-              category: "Alimentation"
-              notes: "Ajout d'une note perso"
+                  example: "Note mise à jour"
       security:
         - BearerAuth: []
       responses:
@@ -103,6 +132,26 @@ paths:
         '404':
           description: Transaction non trouvée
 
+    delete:
+      summary: Supprimer une transaction
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Transaction supprimée avec succès
+        '401':
+          description: Non autorisé
+        '403':
+          description: Suppression non autorisée pour cette transaction
+        '404':
+          description: Transaction non trouvée
+
 components:
   securitySchemes:
     BearerAuth:
@@ -116,15 +165,28 @@ components:
       properties:
         id:
           type: string
+          example: "txn_001"
         amount:
           type: number
           format: float
+          example: -150.75
         date:
           type: string
           format: date
+          example: "2025-05-01"
         description:
           type: string
+          example: "Paiement restaurant"
         category:
           type: string
+          example: "Alimentation"
         notes:
           type: string
+          example: "Dîner entre amis"
+        accountId:
+          type: string
+          example: "acc_123456"
+        type:
+          type: string
+          enum: [debit, credit]
+          example: "debit"
