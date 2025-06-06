@@ -18,20 +18,36 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Transaction'
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    amount:
+                      type: number
+                      format: float
+                    date:
+                      type: string
+                      format: date
+                    description:
+                      type: string
+                    balance:
+                      type: number
+                      format: float
+                    transactionType:
+                      type: string
               example:
                 - id: "iron"
                   amount: 150.75
                   date: "2025-05-01"
                   description: "Paiement restaurant"
-                  category: "Alimentation"
-                  notes: "Dîner entre amis"
+                  balance: 2500.25
+                  transactionType: "Electronic"
                 - id: "iron"
                   amount: -45.00
                   date: "2025-05-03"
                   description: "Essence"
-                  category: "Transport"
-                  notes: ""
+                  balance: 2455.25
+                  transactionType: "Electronic"
         '401':
           description: Non autorisé
 
@@ -58,6 +74,8 @@ paths:
                 amount: 150.75
                 date: "2025-05-01"
                 description: "Paiement restaurant"
+                balance: 2500.25
+                transactionType: "Electronic"
                 category: "Alimentation"
                 notes: "Dîner entre amis"
         '404':
@@ -123,6 +141,11 @@ components:
           type: string
           format: date
         description:
+          type: string
+        balance:
+          type: number
+          format: float
+        transactionType:
           type: string
         category:
           type: string
